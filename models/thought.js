@@ -39,6 +39,11 @@ const thoughtSchema = new Schema({
         type: String,
         required: true
     },
+    userId: { 
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: 'User' 
+    }, 
     reactions: [reactionSchema] 
 }, { toJSON: { virtuals: true }, id: false });
 
@@ -46,5 +51,5 @@ thoughtSchema.virtual('reactionCount').get(function() {
     return this.reactions.length;
 });
 
-const Thought = mongoose.model('Thought', thoughtSchema); // Register the Thought model
+const Thought = mongoose.model('Thought', thoughtSchema); 
 module.exports = Thought;

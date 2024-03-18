@@ -4,16 +4,7 @@ const User = require('../../models/User');
 // GET all users
 router.get('/', async (req, res) => {
     try {
-        const userData = await User.find()
-            .select('-__v') 
-            .populate({
-                path: 'thoughts',
-                select: '-__v'
-            })
-            .populate({
-                path: 'friends',
-                select: '-__v'
-            });
+        const userData = await User.find().select('-__v');
         res.status(200).json(userData);
     } catch (err) {
         console.log(err);
@@ -24,15 +15,17 @@ router.get('/', async (req, res) => {
 // GET a single user by _id
 router.get('/:userId', async (req, res) => {
     try {
-        const userData = await User.findOne({ _id: req.params.userId })
-            .select('-__v')
-            .populate('thoughts') 
-            .populate('friends');
+        const userData = await User.findOne({ _id: req.params.userId }).select('-__v');
 
         if (!userData) {
             return res.status(404).json({ message: 'No user found with that ID' });
         }
-        res.status(200).json(userData);
+
+        // Populate thoughts separately
+        await userData.populate('thoughts').execPopulate(); 
+        await userData.populate('friends').execPopulate(); // Populate friends as well 
+
+        res.status(200).json(userData); 
     } catch (err) {
         console.log(err);
         res.status(500).json(err);
@@ -55,7 +48,6 @@ router.post('/', async (req, res) => {
         }
     }
 });
-
 
 // PUT to update a user by _id
 router.put('/:userId', async (req, res) => {

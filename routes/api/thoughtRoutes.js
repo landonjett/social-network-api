@@ -1,5 +1,6 @@
 const router = require('express').Router();
-const { Thought, User } = require('../../models/Thought');
+const Thought = require('../../models/Thought');
+const User = require('../../models/User');
 
  // Import User directly
 
@@ -35,6 +36,7 @@ router.get('/:thoughtId', async (req, res) => {
 // POST to create a new thought (and push to the user's thoughts array)
 router.post('/', async (req, res) => {
     try {
+        console.log('Thought constructor:', Thought); 
         const thoughtData = await new Thought(req.body).save();
         
         // Update the User 
