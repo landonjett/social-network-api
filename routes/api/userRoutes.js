@@ -15,22 +15,28 @@ router.get('/', async (req, res) => {
 // GET a single user by _id
 router.get('/:userId', async (req, res) => {
     try {
+        console.log('Incoming User ID:', req.params.userId); // Log the ID for debugging
+
         const userData = await User.findOne({ _id: req.params.userId }).select('-__v');
+        console.log('User Data Retrieved:', userData); // Log the retrieved data 
 
         if (!userData) {
             return res.status(404).json({ message: 'No user found with that ID' });
         }
 
-        // Populate thoughts separately
-        await userData.populate('thoughts').execPopulate(); 
-        await userData.populate('friends').execPopulate(); // Populate friends as well 
+        // Populate thoughts and friends separately
+        await userData.populate('thoughts');
+        await userData.populate('friends');
 
         res.status(200).json(userData); 
     } catch (err) {
-        console.log(err);
+        console.log(err);  // Log the error in detail
         res.status(500).json(err);
     }
 });
+
+
+
 
 // POST a new user
 router.post('/', async (req, res) => {
